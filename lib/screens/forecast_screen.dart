@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:weather_app/models/WForecast_model.dart';
+import 'package:weather_app/models/Forecast_model.dart';
 import 'package:weather_app/services/weather_service.dart';
 import 'package:weather_app/utils/weather_animation.dart';
 
@@ -56,19 +56,26 @@ class _ForecastScreenState extends State<ForecastScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Dự báo 5 ngày - ${widget.city}")),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: _forecast.length,
-              itemBuilder: (context, index) {
-                final f = _forecast[index];
-                return ForecastItem(
-                  label: _getLabel(index, f.date),
-                  temp: f.avgTemp.round(),
-                  condition: f.mainCondition,
-                );
-              },
-            ),
+      body: RefreshIndicator(
+        onRefresh: _loadForecast,
+        child: _loading
+            ? SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                child: const Center(child: CircularProgressIndicator()),
+              )
+            : ListView.builder(
+                itemCount: _forecast.length,
+                itemBuilder: (context, index) {
+                  final f = _forecast[index];
+                  return ForecastItem(
+                    label: _getLabel(index, f.date),
+                    minTemp: f.minTemp.round(),
+                    maxTemp: f.maxTemp.round(),
+                    condition: f.mainCondition,
+                  );
+                },
+              ),
+      ),
     );
   }
 }
@@ -76,20 +83,22 @@ class _ForecastScreenState extends State<ForecastScreen> {
 /// Widget riêng để hiển thị 1 ngày dự báo
 class ForecastItem extends StatelessWidget {
   final String label;
-  final int temp;
+  final int minTemp;
+  final int maxTemp;
   final String condition;
 
   const ForecastItem({
     super.key,
     required this.label,
-    required this.temp,
+    required this.minTemp,
+    required this.maxTemp,
     required this.condition,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -106,7 +115,7 @@ class ForecastItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "$temp°C",
+                "$minTemp°C - $maxTemp°C",
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
@@ -114,7 +123,7 @@ class ForecastItem extends StatelessWidget {
               ),
               Text(
                 condition,
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
+                style: const TextStyle(fontSize: 18, color: Colors.grey),
               ),
             ],
           ),

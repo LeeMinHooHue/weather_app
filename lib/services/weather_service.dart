@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:weather_app/models/weather_model.dart';
-import 'package:weather_app/models/WForecast_model.dart';
+import 'package:weather_app/models/Forecast_model.dart';
 
 class WeatherService {
   static const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
@@ -65,7 +65,8 @@ class WeatherService {
 
       List<DailyForecast> results = [];
       tempByDay.forEach((day, temps) {
-        double avg = temps.reduce((a, b) => a + b) / temps.length;
+        double minTemp = temps.reduce((a, b) => a < b ? a : b);
+        double maxTemp = temps.reduce((a, b) => a > b ? a : b);
 
         // chọn điều kiện thời tiết xuất hiện nhiều nhất trong ngày
         var condList = conditionByDay[day]!;
@@ -79,7 +80,12 @@ class WeatherService {
             .key;
 
         results.add(
-          DailyForecast(date: day, avgTemp: avg, mainCondition: mainCond),
+          DailyForecast(
+            date: day,
+            minTemp: minTemp,
+            maxTemp: maxTemp,
+            mainCondition: mainCond,
+          ),
         );
       });
 

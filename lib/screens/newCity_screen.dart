@@ -25,7 +25,9 @@ class _NewCityScreenState extends State<NewCityScreen> {
 
   Future<void> _loadSavedCities() async {
     final saved = await _cityService.loadSavedCities();
-    setState(() => _savedCities = saved);
+    setState(() {
+      _savedCities = saved;
+    });
   }
 
   Future<void> _searchCities(String query) async {
@@ -77,6 +79,7 @@ class _NewCityScreenState extends State<NewCityScreen> {
               onTap: () {
                 Navigator.pop(context, city.toJson());
               },
+              //dialog xóa thành phố
               onLongPress: () async {
                 showDialog(
                   context: context,
@@ -129,50 +132,53 @@ class _NewCityScreenState extends State<NewCityScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Quản lý thành phố")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                hintText: "Nhập tên thành phố",
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(99),
-                ),
-              ),
-              onChanged: (value) {
-                if (value.length > 1) _searchCities(value);
-              },
-            ),
-            const SizedBox(height: 20),
-            _loading
-                ? const CircularProgressIndicator()
-                : Expanded(
-                    child: ListView(
-                      children: [
-                        ..._cities.map((city) {
-                          return Card(
-                            child: ListTile(
-                              leading: const Icon(Icons.location_city),
-                              title: Text("${city.name}, ${city.country}"),
-                              subtitle: Text(
-                                "${city.condition} - ${city.temp}°C",
-                              ),
-                              onTap: () async {
-                                await _cityService.saveCity(city);
-                                Navigator.pop(context, city.toJson());
-                              },
-                            ),
-                          );
-                        }),
-                        const SizedBox(height: 20),
-                        _buildSavedCities(),
-                      ],
-                    ),
+      body: RefreshIndicator(
+        onRefresh: _loadSavedCities,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: "Nhập tên thành phố",
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(99),
                   ),
-          ],
+                ),
+                onChanged: (value) {
+                  if (value.length > 1) _searchCities(value);
+                },
+              ),
+              const SizedBox(height: 20),
+              _loading
+                  ? const CircularProgressIndicator()
+                  : Expanded(
+                      child: ListView(
+                        children: [
+                          ..._cities.map((city) {
+                            return Card(
+                              child: ListTile(
+                                leading: const Icon(Icons.location_city),
+                                title: Text("${city.name}, ${city.country}"),
+                                subtitle: Text(
+                                  "${city.condition}   ${city.temp}°C",
+                                ),
+                                onTap: () async {
+                                  await _cityService.saveCity(city);
+                                  Navigator.pop(context, city.toJson());
+                                },
+                              ),
+                            );
+                          }),
+                          const SizedBox(height: 20),
+                          _buildSavedCities(),
+                        ],
+                      ),
+                    ),
+            ],
+          ),
         ),
       ),
     );
