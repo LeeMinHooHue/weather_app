@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:weather_app/models/Forecast_model.dart';
+import 'package:weather_app/models/forecast_model.dart';
 import 'package:weather_app/services/weather_service.dart';
 import 'package:weather_app/utils/weather_animation.dart';
+import 'package:weather_app/widgets/forecast_widget.dart';
 
 class ForecastScreen extends StatefulWidget {
   final String city;
@@ -63,72 +64,47 @@ class _ForecastScreenState extends State<ForecastScreen> {
                 physics: AlwaysScrollableScrollPhysics(),
                 child: const Center(child: CircularProgressIndicator()),
               )
-            : ListView.builder(
-                itemCount: _forecast.length,
-                itemBuilder: (context, index) {
-                  final f = _forecast[index];
-                  return ForecastItem(
-                    label: _getLabel(index, f.date),
-                    minTemp: f.minTemp.round(),
-                    maxTemp: f.maxTemp.round(),
-                    condition: f.mainCondition,
-                  );
-                },
+            : ForecastList(
+                forecast: _forecast,
+                getLabel: _getLabel,
+                maxItem: 7,
               ),
       ),
     );
   }
-}
 
-/// Widget riêng để hiển thị 1 ngày dự báo
-class ForecastItem extends StatelessWidget {
-  final String label;
-  final int minTemp;
-  final int maxTemp;
-  final String condition;
-
-  const ForecastItem({
-    super.key,
-    required this.label,
-    required this.minTemp,
-    required this.maxTemp,
-    required this.condition,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          Lottie.asset(
-            WeatherAnimation.getWeatherAnimation(condition),
-            height: 60,
-            width: 60,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                "$minTemp°C - $maxTemp°C",
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              Text(
-                condition,
-                style: const TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            ],
-          ),
-        ],
-      ),
+  Widget buildForecastCard(
+    final String label,
+    final int minTemp,
+    final int maxTemp,
+    final String condition,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        Lottie.asset(
+          WeatherAnimation.getWeatherAnimation(condition),
+          height: 60,
+          width: 60,
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              "$minTemp°C - $maxTemp°C",
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            ),
+            Text(
+              condition,
+              style: const TextStyle(fontSize: 18, color: Colors.grey),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

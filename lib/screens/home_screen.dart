@@ -2,13 +2,15 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lottie/lottie.dart';
-import 'package:weather_app/models/Forecast_model.dart';
+import 'package:weather_app/models/forecast_model.dart';
 import 'package:weather_app/models/weather_model.dart';
 import 'package:weather_app/screens/forecast_screen.dart';
 import 'package:weather_app/screens/newCity_screen.dart';
 import 'package:weather_app/services/weather_service.dart';
 import 'package:weather_app/utils/weather_animation.dart';
 import 'package:weather_app/utils/weather_background.dart';
+import 'package:weather_app/widgets/customContainer_widget.dart';
+import 'package:weather_app/widgets/forecast_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -107,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage(
+              //background theo thời tiết hiện tại
               WeatherBackground.getBackground(
                 condition,
                 isDay: DateTime.now().hour >= 6 && DateTime.now().hour < 18,
@@ -123,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
             title: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // button add city
+                // button thêm thành phố
                 IconButton(
                   onPressed: _selectCity,
                   icon: const Icon(Icons.add, size: 40),
@@ -139,91 +142,35 @@ class _HomeScreenState extends State<HomeScreen> {
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
                       children: [
-                        // tên thành phố
-                        Text(
+                        //thành phố,nhiệt độ,thời tiết hiện tại
+                        buildWeatherByLocal(
+                          context,
+                          _forecast,
+                          _getLabel,
                           city,
-                          style: const TextStyle(
-                            fontSize: 22,
-                            color: Colors.white,
-                          ),
-                        ),
-                        // animation thời tiết
-                        Lottie.asset(
-                          WeatherAnimation.getWeatherAnimation(condition),
-                          height: 150,
-                        ),
-                        // nhiệt độ
-                        Text(
-                          "$temp °C",
-                          style: const TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        // thời tiết hiện tại
-                        Text(
                           condition,
-                          style: const TextStyle(color: Colors.white70),
+                          temp,
                         ),
                         const SizedBox(height: 170),
                         // khung dự báo 5 ngày
-                        Container(
-                          height: 315,
-                          margin: const EdgeInsets.all(20),
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.2),
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 20,
-                                offset: const Offset(0, 10),
-                              ),
-                            ],
-                          ),
+                        CustomContainer(
+                          height: 320,
+                          margin: EdgeInsets.all(20),
+                          padding: EdgeInsets.all(20),
                           child: Column(
                             children: [
                               // Header
-                              Row(
-                                children: const [
-                                  Icon(
-                                    Icons.calendar_today,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    'Dự báo 5 ngày',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              // khung hiển thị 3 ngày tiếp theo
+                              buildHeaderForecast5Day(),
+                              // danh sách dự báo
                               SizedBox(
                                 height: 200,
-                                child: ListView.builder(
-                                  itemCount: min(3, _forecast.length),
-                                  itemBuilder: (context, index) {
-                                    final f = _forecast[index];
-                                    return ForecastItem(
-                                      label: _getLabel(index, f.date),
-                                      minTemp: f.minTemp.round(),
-                                      maxTemp: f.maxTemp.round(),
-                                      condition: f.mainCondition,
-                                    );
-                                  },
+                                child: ForecastList(
+                                  maxItem: 3,
+                                  forecast: _forecast,
+                                  getLabel: _getLabel,
                                 ),
                               ),
-                              // button dự báo 5 ngày
+                              //nút xem dự báo 5 ngày
                               buildButtonWidget(context, city),
                             ],
                           ),
@@ -264,5 +211,54 @@ Widget buildButtonWidget(BuildContext context, String city) {
         ),
       ),
     ),
+  );
+}
+
+Widget buildWeatherByLocal(
+  BuildContext context,
+  List<DailyForecast> forecast,
+  String Function(int, String) getLabel,
+  String city,
+  String condition,
+  final temp,
+) {
+  return Column(
+    children: [
+      //tên thành phố
+      Text(city, style: const TextStyle(fontSize: 22, color: Colors.white)),
+      // animation thời tiết
+      Lottie.asset(
+        WeatherAnimation.getWeatherAnimation(condition),
+        height: 150,
+      ),
+      // nhiệt độ
+      Text(
+        "$temp °C",
+        style: const TextStyle(
+          fontSize: 26,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      // thời tiết hiện tại
+      Text(condition, style: const TextStyle(color: Colors.white70)),
+    ],
+  );
+}
+
+Widget buildHeaderForecast5Day() {
+  return Row(
+    children: const [
+      Icon(Icons.calendar_today, color: Colors.white, size: 18),
+      SizedBox(width: 10),
+      Text(
+        'Dự báo 5 ngày',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    ],
   );
 }
