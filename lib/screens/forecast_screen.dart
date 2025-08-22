@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:weather_app/models/forecast_model.dart';
 import 'package:weather_app/services/weather_service.dart';
-import 'package:weather_app/utils/weather_animation.dart';
 import 'package:weather_app/widgets/forecast_widget.dart';
 
 class ForecastScreen extends StatefulWidget {
@@ -70,41 +68,6 @@ class _ForecastScreenState extends State<ForecastScreen> {
                 maxItem: 7,
               ),
       ),
-    );
-  }
-
-  Widget buildForecastCard(
-    final String label,
-    final int minTemp,
-    final int maxTemp,
-    final String condition,
-  ) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        Lottie.asset(
-          WeatherAnimation.getWeatherAnimation(condition),
-          height: 60,
-          width: 60,
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              "$minTemp°C - $maxTemp°C",
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            ),
-            Text(
-              condition,
-              style: const TextStyle(fontSize: 18, color: Colors.grey),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }

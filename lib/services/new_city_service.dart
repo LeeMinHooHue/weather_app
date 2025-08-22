@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/NewCity_model.dart';
+import '../models/new_city_model.dart';
 
 class CityService {
   final String apiKey = "645b5ba340e664bbb3180b5fbf110874";

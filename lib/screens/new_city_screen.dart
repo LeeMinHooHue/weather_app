@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:weather_app/widgets/deleteCityDialog.dart';
+import 'package:weather_app/widgets/delete_city_dialog.dart';
 import 'package:weather_app/widgets/saved_city_list.dart';
 import 'package:weather_app/widgets/search_result_list.dart';
-import '../models/NewCity_model.dart';
-import '../services/NewCity_service.dart';
+import '../models/new_city_model.dart';
+import '../services/new_city_service.dart';
 
 class NewCityScreen extends StatefulWidget {
   const NewCityScreen({super.key});

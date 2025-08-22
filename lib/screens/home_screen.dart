@@ -1,15 +1,14 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lottie/lottie.dart';
 import 'package:weather_app/models/forecast_model.dart';
 import 'package:weather_app/models/weather_model.dart';
 import 'package:weather_app/screens/forecast_screen.dart';
-import 'package:weather_app/screens/newCity_screen.dart';
+import 'package:weather_app/screens/new_city_screen.dart';
 import 'package:weather_app/services/weather_service.dart';
 import 'package:weather_app/utils/weather_animation.dart';
 import 'package:weather_app/utils/weather_background.dart';
-import 'package:weather_app/widgets/customContainer_widget.dart';
+import 'package:weather_app/widgets/custom_container.dart';
 import 'package:weather_app/widgets/forecast_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -129,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // button thêm thành phố
                 IconButton(
                   onPressed: _selectCity,
-                  icon: const Icon(Icons.add, size: 40),
+                  icon: const Icon(Icons.add, size: 40, color: Colors.white),
                 ),
               ],
             ),
@@ -160,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Column(
                             children: [
                               // Header
-                              buildHeaderForecast5Day(),
+                              buildHeader5DaysForecast(),
                               // danh sách dự báo
                               SizedBox(
                                 height: 200,
@@ -246,7 +245,7 @@ Widget buildWeatherByLocal(
   );
 }
 
-Widget buildHeaderForecast5Day() {
+Widget buildHeader5DaysForecast() {
   return Row(
     children: const [
       Icon(Icons.calendar_today, color: Colors.white, size: 18),

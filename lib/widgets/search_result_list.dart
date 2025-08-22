@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/NewCity_model.dart';
+import '../models/new_city_model.dart';
 
 class SearchResultList extends StatelessWidget {
   final List<NewCity> cities;
